@@ -1,0 +1,78 @@
+# ============================================================
+# AI Vision Assistant — Master Configuration (v1.0)
+# Per master prompt spec. No hardcoded values in code.
+# ============================================================
+
+camera:
+  index: 0                    # Camera device index (0 = default webcam)
+  width: 640                  # Frame width in pixels
+  height: 480                 # Frame height in pixels
+  fps: 30                     # Target capture FPS
+
+# ── Object Detection (YOLOv8n — COCO 80-class, nano variant) ─
+detection:
+  model: "yolov8n.pt"                  # YOLOv8 nano variant for speed
+  confidence: 0.5                      # Min confidence threshold
+  iou_threshold: 0.45                  # NMS IoU threshold
+  max_detections: 8                    # Max raw detections per frame
+  label_normalisation: true            # Apply speech-friendly label mapping
+  max_objects: 3                       # Max objects to announce per cycle
+  imgsz: 320                           # Input resolution (320 = fast CPU, 640 = accurate)
+  # classes: [person, chair, car, ...]  # Optional whitelist (omit = all 80)
+
+# ── Depth Estimation (MiDaS DPT-Small via torch.hub) ────────
+depth:
+  model: "MiDaS_small"           # MiDaS model variant
+  scale_factor: 1000.0         # Depth → metres calibration factor
+  min_distance: 0.3            # Minimum clamped distance (metres)
+  max_distance: 10.0           # Maximum clamped distance (metres)
+  approaching_threshold_m_per_s: 0.4  # Object closing > 0.4m/s = approaching
+  small_bbox_threshold_pct: 1.0       # bbox < 1% of frame = low confidence
+  ema_alpha_critical: 0.4     # EMA smoothing for close objects (fast response)
+  ema_alpha_info: 0.2         # EMA smoothing for far objects (smooth)
+  skip_frames: 3              # Only run depth model every Nth frame
+  input_size: 384             # Downscale input to this for speed
+
+# ── Direction ────────────────────────────────────────────────
+direction:
+  left_boundary: 0.33         # Fraction of frame width — left zone ends
+  right_boundary: 0.66        # Fraction of frame width — right zone starts
+
+# ── Audio (pyttsx3 offline / gTTS online fallback) ───────────
+audio:
+  engine: "pyttsx3"
+  rate: 160                   # Speech rate (words per minute)
+  volume: 0.9                 # Volume level [0.0 - 1.0]
+  cooldown_seconds: 3.0       # Re-announce suppression (seconds)
+  clear_path_interval: 5.0    # "Path is clear" interval (seconds)
+
+# ── Blind Assistance Engine ─────────────────────────────────
+blind_assistance:
+  dead_ahead_zone_pct: [0.35, 0.65]
+  critical_distance_m: 1.5
+  warning_distance_m: 3.0
+  fast_approach_velocity_m_per_s: 1.0
+  scene_summary_interval_s: 15
+  max_announcements_per_frame: 2
+  staircase_bottom_frame_pct: 0.60
+  cooldown:
+    critical_s: 1.5
+    warning_s: 3.0
+    info_s: 6.0
+    clear_s: 10.0
+    safety_override: true
+
+# ── Pipeline ────────────────────────────────────────────────
+pipeline:
+  frame_queue_size: 2
+  result_queue_size: 1
+  inference_threads: 1
+  display_fps: true
+  warmup_frames: 5
+  frame_skip_threshold_ms: 100
+
+# ── System ──────────────────────────────────────────────────
+system:
+  log_level: "INFO"           # Logging verbosity
+  headless: false             # Run without display window
+  target_latency_ms: 500      # End-to-end latency target

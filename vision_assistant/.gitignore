@@ -1,0 +1,53 @@
+# ────────────────────────────────────────────
+# AI Vision Assistant — .gitignore
+# ────────────────────────────────────────────
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+
+# Model weights (download via setup.sh, don't commit)
+models/
+*.pt
+*.pth
+*.onnx
+
+# Audio cache
+audio/
+
+# Logs
+logs/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Pytest cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# Benchmark outputs
+benchmark_report.json
+
+# Torch Hub cache (optional — large)
+# .cache/torch/hub/
